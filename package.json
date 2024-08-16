@@ -10,7 +10,7 @@
     "chip.js",
     "package.json",
     "README.md",
-    "yarn.lock"
+    "package-lock.json"
   ],
   "contributors": [
     "Andrew Dillon <andrew.dillon.j@gmail.com>",

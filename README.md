@@ -16,13 +16,13 @@
 Run the following command to install `chip` from NPM:
 
 ```
-yarn global add @qdivision/chip
+npm install -g @qdivision/chip
 ```
 
 You can update your installation by running:
 
 ```
-yarn global upgrade @qdivision/chip
+npm update -g @qdivision/chip
 ```
 
 ## Usage
@@ -81,8 +81,8 @@ setup-service: |
 services:
   sandwich-ui:
     repo: 'git@github.com:QDivision/sandwich-ui.git'
-    install: 'yarn install'
-    run: 'yarn start'
+    install: 'npm install'
+    run: 'npm run start'
     tags:
       - sandwich
 
@@ -100,8 +100,8 @@ services:
 
   emoji-api:
     repo: 'git@github.com:QDivision/emoji-api.git'
-    install: 'yarn install'
-    run: 'yarn start'
+    install: 'npm install'
+    run: 'npm run start'
 ```
 
 ## Sample `secretchip.yml`
@@ -138,21 +138,21 @@ Run the following commands to clone the `chip` source code and set it up for dev
 ```
 git clone git@github.com:QDivision/chip.git
 cd chip
-yarn install
-yarn build
-yarn link
+npm install
+npm run build
+npm link
 chip help
 ```
 
-Note that you must run `yarn build` each time you make a change to the `.ts` source files in order for it to be picked up when you run `chip`.
+Note that you must run `npm run build` each time you make a change to the `.ts` source files in order for it to be picked up when you run `chip`.
 
-If you are actively making changes to the source code you can run `yarn buildw` to start a process that will automatically detect changes to the source files and recompile the project for you. This is the fastest and easiest way to develop `chip`.
+If you are actively making changes to the source code you can run `npm run buildw` to start a process that will automatically detect changes to the source files and recompile the project for you. This is the fastest and easiest way to develop `chip`.
 
-If chip was initially installed through Yarn and you want to switch to a development installation, you should run the following commands.
+If chip was initially installed through NPM and you want to switch to a development installation, you should run the following commands.
 
 ```
 cd chip
-yarn global remove @qdivision/chip
-yarn unlink
-yarn link
+npm uninstall -g @qdivision/chip
+npm unlink
+npm link
 ```
