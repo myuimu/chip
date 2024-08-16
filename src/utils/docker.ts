@@ -26,21 +26,21 @@ export const isPresent = () => fs.existsSync(`${CWD}/docker-compose.yml`);
  * If no services are specified, all of them will be started.
  */
 export const up = async (services: string[] = []) =>
-  exec(`docker-compose up -d ${services.join(' ')}`, { cwd: CWD, live: true });
+  exec(`docker compose up -d ${services.join(' ')}`, { cwd: CWD, live: true });
 
 /**
  * Stop specified docker-compose services in this project.
  * If no services are specified, all of them will be stopped.
  */
 export const stop = async (services: string[] = []) =>
-  exec(`docker-compose stop ${services.join(' ')}`, { cwd: CWD, live: true });
+  exec(`docker compose stop ${services.join(' ')}`, { cwd: CWD, live: true });
 
 /**
  * Restart specified docker-compose services in this project.
  * If no services are specified, all of them will be restarted.
  */
 export const restart = async (services: string[] = []) =>
-  exec(`docker-compose restart ${services.join(' ')}`, {
+  exec(`docker compose restart ${services.join(' ')}`, {
     cwd: CWD,
     live: true,
   });
@@ -50,7 +50,7 @@ export const restart = async (services: string[] = []) =>
  * If no services are specified, all of them will be removed.
  */
 export const rm = async (services: string[] = []) =>
-  exec(`docker-compose rm --stop --force ${services.join(' ')}`, {
+  exec(`docker compose rm --stop --force ${services.join(' ')}`, {
     cwd: CWD,
     live: true,
   });
