@@ -5,6 +5,7 @@ import { green, red } from 'chalk';
 
 import { CWD } from '../utils/files';
 import { exec } from '../utils/processes';
+import {readConfig} from './config';
 
 const capitalize = (value: string) =>
   value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
@@ -66,8 +67,16 @@ export const composeServices = async (): Promise<{
 /** Get names of docker-compose services in this project. */
 export const composeServiceNames = async (serviceWhitelist?: string[]) => {
   const allServices = Object.keys(await composeServices());
+
   if (!serviceWhitelist) return allServices;
-  return allServices.filter((n) => serviceWhitelist.includes(n));
+
+  const config = await readConfig();
+  return allServices.filter((n) =>
+    serviceWhitelist.includes(n)
+    || (config.containers
+      && config.containers[n]?.tags?.some((tag) => serviceWhitelist.includes(tag))
+    )
+  );
 };
 
 /** Returns a list of all services in the `docker-compose.yml` file */

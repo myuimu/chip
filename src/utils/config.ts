@@ -17,6 +17,13 @@ export interface ChipConfig {
         }
       | undefined;
   };
+  containers?: {
+    [name: string]:
+      | {
+          tags?: string[];
+        }
+      | undefined;
+  };
 }
 
 export interface ChipSecrets {
