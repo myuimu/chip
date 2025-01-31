@@ -6,8 +6,13 @@ import { processExists, getActiveProcesses } from '../utils/ps';
 import { PROJECT_NAME } from '../utils/files';
 import { printError } from '../utils/errors';
 import { readServices } from '../utils/config';
+import { isPresent, stop } from '../utils/docker';
 
 export const stopProcess = async (name: string, pid: number) => {
+  if (isPresent(name)) {
+    await stop([], name);
+  }
+
   console.log(chalk`Stopping {bold ${name}} with pid {bold ${pid}}`);
   if (await processExists(pid)) {
     // https://stackoverflow.com/a/8406413

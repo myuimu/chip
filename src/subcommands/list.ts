@@ -11,15 +11,19 @@ import { PROJECT_NAME } from '../utils/files';
 const dockerServices = async () => {
   if (!docker.isPresent()) return [];
   const services = await docker.listServices();
-  return services.map(({ name, image, status, ports }) => [
-    name,
-    image ?? '',
-    status ?? '',
-    ' 🐳',
-    ports ?? '',
-    '',
-    '',
-  ]);
+  return services.map(({ name, image, status, ports, tags }) => {
+    const allTags = tags.join(', ') || '';
+
+    return [
+      name,
+      image ?? '',
+      status ?? '',
+      ' 🐳',
+      ports ?? '',
+      '',
+      allTags.substring(0, 30) + (allTags.length > 30 ? '...' : ''),
+    ];
+  });
 };
 
 // TODO: Log orphans

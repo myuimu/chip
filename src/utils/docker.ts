@@ -5,7 +5,7 @@ import { green, red } from 'chalk';
 
 import { CWD } from '../utils/files';
 import { exec } from '../utils/processes';
-import {readConfig} from './config';
+import { readConfig } from './config';
 
 const capitalize = (value: string) =>
   value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
@@ -27,14 +27,14 @@ export const isPresent = (subDirectory?: string) => fs.existsSync(`${CWD}${subDi
  * If no services are specified, all of them will be started.
  */
 export const up = async (services: string[] = [], subDirectory?: string) =>
-  exec(`docker compose up ${subDirectory ? `-f ${subDirectory}/docker-compose.yml` : ''} -d ${services.join(' ')}`, { cwd: CWD, live: true });
+  exec(`docker compose ${subDirectory ? `-f ${subDirectory}/docker-compose.yml` : ''} up -d ${services.join(' ')}`, { cwd: CWD, live: true });
 
 /**
  * Stop specified docker-compose services in this project.
  * If no services are specified, all of them will be stopped.
  */
-export const stop = async (services: string[] = []) =>
-  exec(`docker compose stop ${services.join(' ')}`, { cwd: CWD, live: true });
+export const stop = async (services: string[] = [], subDirectory?: string) =>
+  exec(`docker compose ${subDirectory ? `-f ${subDirectory}/docker-compose.yml` : ''} stop ${services.join(' ')}`, { cwd: CWD, live: true });
 
 /**
  * Restart specified docker-compose services in this project.
@@ -57,26 +57,31 @@ export const rm = async (services: string[] = []) =>
   });
 
 export const composeServices = async (): Promise<{
-  [serviceName: string]: { image: string };
+  [serviceName: string]: { image: string, tags: string[] };
 }> => {
   const composeYml = await fs.readFile(`${CWD}/docker-compose.yml`, 'utf8');
   const composeConfig = (await yaml.safeLoad(composeYml)) as any;
-  return composeConfig?.services ?? {};
+  const services = composeConfig?.services ?? {};
+  const config = await readConfig();
+  return Object.fromEntries(
+    Object.entries(services)
+      .map(([key, value]) => [key, {
+        ...(value as any),
+        tags: config.containers?.[key]?.tags || []
+      }])
+  );
 };
 
 /** Get names of docker-compose services in this project. */
 export const composeServiceNames = async (serviceWhitelist?: string[]) => {
-  const allServices = Object.keys(await composeServices());
+  const allServices = await composeServices();
 
-  if (!serviceWhitelist) return allServices;
+  if (!serviceWhitelist) return Object.keys(allServices);
 
-  const config = await readConfig();
-  return allServices.filter((n) =>
-    serviceWhitelist.includes(n)
-    || (config.containers
-      && config.containers[n]?.tags?.some((tag) => serviceWhitelist.includes(tag))
-    )
-  );
+  return Object.entries(allServices).filter(([name, { tags }]) =>
+    serviceWhitelist.includes(name)
+    || tags.some((tag) => serviceWhitelist.includes(tag))
+  ).map(([name]) => name);
 };
 
 /** Returns a list of all services in the `docker-compose.yml` file */
@@ -96,7 +101,7 @@ export const listServices = async () => {
     }))
     .filter(({ projectDir }) => resolve(projectDir) === CWD);
 
-  return Object.entries(services).map(([serviceName, { image }]) => {
+  return Object.entries(services).map(([serviceName, { image, tags }]) => {
     const info = runningServices.find((s) => s.serviceName === serviceName);
     return {
       name: serviceName,
@@ -109,6 +114,7 @@ export const listServices = async () => {
             .map((p) => p.match(/\b\d+(?=\/tcp\b)/)?.[0])
             .join(', ')
         : '',
+      tags,
     };
   });
 };
