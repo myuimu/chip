@@ -5,6 +5,7 @@ import { log } from '../utils/log';
 import { persistPid, getActiveProcesses, createLogStream } from '../utils/ps';
 import { execDetached } from '../utils/processes';
 import { printError } from '../utils/errors';
+import {isPresent, up} from '../utils/docker';
 
 export const startService = async (
   serviceName: string,
@@ -12,6 +13,10 @@ export const startService = async (
   env: { [envVar: string]: string },
   secrets: { [envVar: string]: string },
 ) => {
+  if (isPresent(serviceName)) {
+    await up([], serviceName)
+  }
+
   log`Starting service {bold ${serviceName}}`;
 
   const { setup, setupService } = await readScripts();
