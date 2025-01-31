@@ -13,11 +13,11 @@ export const startService = async (
   env: { [envVar: string]: string },
   secrets: { [envVar: string]: string },
 ) => {
-  log`Starting service {bold ${serviceName}}`;
-
   if (isPresent(serviceName)) {
     await up([], serviceName)
   }
+
+  log`Starting service {bold ${serviceName}}`;
 
   const { setup, setupService } = await readScripts();
 
