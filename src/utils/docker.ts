@@ -20,14 +20,14 @@ const parseTable = (rawTable: string, skipRows = 0) =>
     .map((line) => line.split(/\s{3,}/g));
 
 /** Returns `true` if a `docker-compose.yml` file is present in the project */
-export const isPresent = () => fs.existsSync(`${CWD}/docker-compose.yml`);
+export const isPresent = (subDirectory?: string) => fs.existsSync(`${CWD}${subDirectory ? `/${subDirectory}` : ''}/docker-compose.yml`);
 
 /**
  * Start specified docker-compose services in this project.
  * If no services are specified, all of them will be started.
  */
-export const up = async (services: string[] = []) =>
-  exec(`docker compose up -d ${services.join(' ')}`, { cwd: CWD, live: true });
+export const up = async (services: string[] = [], subDirectory?: string) =>
+  exec(`docker compose up ${subDirectory ? `-f ${subDirectory}/docker-compose.yml` : ''} -d ${services.join(' ')}`, { cwd: CWD, live: true });
 
 /**
  * Stop specified docker-compose services in this project.
