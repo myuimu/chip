@@ -16,6 +16,10 @@ export const installService = async (
 
   await exec(
     `
+    if [ -f flake.nix ]; then
+      nix develop
+    fi
+    
     ${setup}
     ${setupService}
     ${install}
