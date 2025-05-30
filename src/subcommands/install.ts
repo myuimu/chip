@@ -17,12 +17,16 @@ export const installService = async (
   await exec(
     `
     if [ -f flake.nix ]; then
-      nix develop
+      nix develop --command "
+        ${setup}
+        ${setupService}
+        ${install}
+      "
+    else
+      ${setup}
+      ${setupService}
+      ${install}
     fi
-    
-    ${setup}
-    ${setupService}
-    ${install}
     `,
     { cwd: name, live: true, env: { ...process.env, ...secrets } },
   );
